@@ -1,0 +1,1153 @@
+import React, { useEffect, useState } from "react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Camera,
+  Car,
+  CheckCircle2,
+  Clock3,
+  Dumbbell,
+  GraduationCap,
+  Handshake,
+  Hotel,
+  Instagram,
+  Mail,
+  MapPin,
+  Mic2,
+  Music2,
+  Navigation,
+  Play,
+  Plane,
+  Send,
+  Sun,
+  Ticket,
+  Trophy,
+  Utensils,
+  Users,
+  Youtube,
+  Zap,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  calendar,
+  eventActivities,
+  eventGallery,
+  featuredGuests,
+  runBasicChecks,
+  sponsorBrands,
+  sponsorGroups,
+  ticketPlans,
+  ticketTypes,
+} from "./eventData";
+
+const EVENT_DATE = "2026-05-22T08:00:00+02:00";
+const OFFICIAL_EMAIL = "fitnessworldexpo2026@gmail.com";
+const VENUE_MAP_URL =
+  "https://www.openstreetmap.org/export/embed.html?bbox=-4.4765%2C36.6748%2C-4.4415%2C36.6922&layer=mapnik&marker=36.6826%2C-4.4598";
+const VENUE_MAP_LINK =
+  "https://www.openstreetmap.org/?mlat=36.6826&mlon=-4.4598#map=15/36.6826/-4.4598";
+
+const heroStats = [
+  {
+    icon: CalendarDays,
+    title: "22, 23 y 24 de mayo de 2026",
+    text: "Tres jornadas de evento, de 08:00 a 17:00, con programación abierta y profesional.",
+  },
+  {
+    icon: MapPin,
+    title: "Palacio Martín Carpena",
+    text: "Málaga, con zonas interiores y exteriores organizadas para el evento.",
+  },
+  {
+    icon: Users,
+    title: "+12.000 asistentes",
+    text: "Público general, deportistas, marcas, creadores y profesionales del sector.",
+  },
+  {
+    icon: Dumbbell,
+    title: "Programa de actividades",
+    text: "Conferencias, competiciones, masterclass, networking y zonas de experiencia.",
+  },
+];
+
+const activityIcons = {
+  mic: Mic2,
+  trophy: Trophy,
+  graduation: GraduationCap,
+  networking: Handshake,
+  outdoor: Sun,
+  food: Utensils,
+};
+
+const locationDetails = [
+  {
+    icon: Navigation,
+    title: "Acceso al recinto",
+    text: "Entrada organizada por zonas para público general, acreditaciones profesionales y pases VIP. Se recomienda llegar con margen en las franjas de mayor afluencia.",
+  },
+  {
+    icon: Car,
+    title: "Parking",
+    text: "Aparcamiento disponible en el entorno del Palacio Martín Carpena, sujeto a ocupación. La señalización del evento indicará los accesos habilitados.",
+  },
+  {
+    icon: Plane,
+    title: "Aeropuerto",
+    text: "El Aeropuerto de Málaga-Costa del Sol conecta con la ciudad mediante taxi, VTC y transporte público, con acceso directo hacia la zona oeste de Málaga.",
+  },
+  {
+    icon: Hotel,
+    title: "Hoteles cercanos",
+    text: "La zona oeste y el centro de Málaga cuentan con alojamientos bien conectados con el recinto para asistentes, invitados y equipos de marca.",
+  },
+];
+
+const socialChannels = [
+  {
+    icon: Instagram,
+    name: "Instagram",
+    handle: "@fitnessworldexpo",
+    text: "Canal principal para novedades, invitados, entradas y contenido del evento.",
+    href: "https://www.instagram.com/fitnessworldexpo2026?igsh=Njg0NDgyOHN0a2Uw&utm_source=qr",
+    status: "Activo",
+  },
+  {
+    icon: Music2,
+    name: "TikTok",
+    handle: "Próximamente",
+    text: "Canal previsto para clips breves, retos y contenido dinámico de la expo.",
+    status: "Próximamente",
+  },
+];
+
+function getTimeLeft() {
+  const distance = new Date(EVENT_DATE).getTime() - Date.now();
+  const safeDistance = Math.max(distance, 0);
+
+  return {
+    days: Math.floor(safeDistance / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((safeDistance / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((safeDistance / (1000 * 60)) % 60),
+    seconds: Math.floor((safeDistance / 1000) % 60),
+  };
+}
+
+function useCountdown() {
+  const [timeLeft, setTimeLeft] = useState(getTimeLeft);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return timeLeft;
+}
+
+function useScrollReveal() {
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll("[data-animate]"));
+
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        rootMargin: "0px 0px -8% 0px",
+        threshold: 0.14,
+      },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, []);
+}
+
+export default function FitnessWorldExpoWeb() {
+  const countdown = useCountdown();
+  useScrollReveal();
+
+  return (
+    <div className="min-h-screen overflow-hidden bg-black pb-[calc(5.75rem+env(safe-area-inset-bottom))] text-white md:pb-0">
+      <section
+        className="laser-field cinematic-bg relative isolate min-h-[100svh] overflow-hidden px-4 pb-10 pt-7 sm:px-6 sm:py-14 lg:py-20"
+        id="inicio"
+        aria-labelledby="hero-title"
+      >
+        <video
+          aria-hidden="true"
+          autoPlay
+          className="hero-video absolute inset-0 h-full w-full object-cover opacity-[0.55] motion-reduce:hidden"
+          disablePictureInPicture
+          loop
+          muted
+          playsInline
+          poster="/assets/fitness-world-expo-hero-v2.png"
+          preload="auto"
+        >
+          <source src="/assets/fitness-world-hero-cinematic.webm" type="video/webm" />
+        </video>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_36%,rgba(8,119,255,.32),transparent_34%),linear-gradient(90deg,#02040a_0%,rgba(2,4,10,.88)_36%,rgba(2,4,10,.36)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black to-transparent" />
+
+        <div className="relative z-10 mx-auto grid max-w-7xl min-w-0 items-center gap-7 lg:min-h-[calc(100svh-10rem)] lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
+          <div className="reveal-up min-w-0 max-w-3xl">
+            <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-[0.68rem] font-black uppercase text-cyan-300 sm:mb-5 sm:text-xs">
+              <Zap size={15} aria-hidden="true" />
+              Edición 2026 · Málaga
+            </p>
+            <h1
+              className="text-balance max-w-full text-[2.42rem] font-black uppercase leading-[0.92] tracking-normal min-[380px]:text-[2.58rem] sm:text-6xl lg:text-8xl"
+              id="hero-title"
+            >
+              Fitness World <span className="text-blue-500">Expo 2026</span>
+            </h1>
+            <p className="mt-4 max-w-full text-sm leading-7 text-slate-300 sm:mt-7 sm:max-w-2xl sm:text-xl sm:leading-8">
+              Una propuesta de evento dedicada al fitness, el entrenamiento y
+              la nutrición, con actividades para público general y profesional.
+            </p>
+
+            <div className="mt-7 flex min-w-0 flex-col gap-3 sm:mt-8 sm:flex-row">
+              <Button className="min-h-[3.25rem] w-full bg-blue-600 px-6 shadow-electric hover:bg-blue-500 sm:min-h-14 sm:w-auto sm:px-7" href="#entradas">
+                <Ticket size={20} aria-hidden="true" />
+                Comprar entrada
+                <ArrowRight size={18} aria-hidden="true" />
+              </Button>
+              <Button
+                className="min-h-[3.25rem] w-full border-white/25 bg-white/5 px-6 text-white hover:border-cyan-300 hover:bg-blue-500/10 sm:min-h-14 sm:w-auto sm:px-7"
+                href="#programa"
+                variant="outline"
+              >
+                <Play size={18} aria-hidden="true" />
+                Ver calendario
+              </Button>
+            </div>
+
+            <div className="mt-7 max-w-full rounded-lg border border-blue-400/25 bg-black/40 p-3 shadow-electric backdrop-blur-xl sm:mt-8 sm:max-w-2xl">
+              <div className="mb-3 flex items-center justify-between gap-3 px-1">
+                <p className="flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.14em] text-cyan-300 sm:text-xs sm:tracking-[0.18em]">
+                  <Clock3 size={15} aria-hidden="true" />
+                  Cuenta atrás
+                </p>
+                <span className="hidden h-px flex-1 bg-gradient-to-r from-blue-400/60 to-transparent sm:block" />
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {[
+                ["Días", countdown.days],
+                ["Horas", countdown.hours],
+                ["Min", countdown.minutes],
+                ["Seg", countdown.seconds],
+                ].map(([label, value]) => (
+                  <CountdownUnit label={label} value={value} key={label} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="reveal-up reveal-delay-1 relative min-h-[235px] min-w-0 sm:min-h-[420px] lg:min-h-[620px]">
+            <div className="absolute -inset-6 rounded-[2rem] bg-blue-500/20 blur-3xl" />
+            <div className="cinematic-float relative min-h-[235px] overflow-hidden rounded-lg border border-blue-400/25 bg-slate-950 shadow-electric sm:min-h-[420px] lg:min-h-[620px]">
+              <img
+                className="fitness-media absolute inset-0 h-full w-full object-cover"
+                src="/assets/fitness-world-expo-hero-v2.png"
+                alt="Zona de competición fitness con iluminación azul y ambiente de evento"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-3 rounded-lg border border-white/10 bg-black/[0.50] p-3 backdrop-blur-xl sm:bottom-5 sm:left-5 sm:right-5 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+                <div>
+                  <p className="text-xs font-black uppercase text-cyan-300">Zona principal</p>
+                  <p className="mt-1 text-sm font-black leading-snug sm:text-lg">Competición, marcas y actividades durante toda la jornada</p>
+                </div>
+                <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-black">
+                  <Trophy size={17} aria-hidden="true" />
+                  En directo
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto mt-6 grid max-w-7xl min-w-0 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          {heroStats.map((item, index) => (
+            <Info index={index} key={item.title} {...item} />
+          ))}
+        </div>
+      </section>
+
+      <section
+        className="relative overflow-hidden border-y border-blue-500/20 bg-black px-4 py-14 sm:px-6 sm:py-20"
+        id="patrocinadores"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(8,119,255,.18),transparent_42%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:64px_64px] opacity-[0.12]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between" data-animate="fade-up">
+            <div>
+              <p className="mb-3 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Zap size={15} aria-hidden="true" />
+                Sponsors & socios
+              </p>
+              <h2 className="max-w-xl text-2xl font-black uppercase tracking-normal sm:text-4xl">
+                Patrocinadores y socios oficiales
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-400 sm:text-right">
+              Marcas y socios vinculados al entrenamiento, la nutrición, el
+              equipamiento y la experiencia de un evento fitness internacional.
+            </p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {sponsorGroups.map((group, index) => (
+              <SponsorGroup group={group} index={index} key={group.category} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="relative overflow-hidden bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:py-24"
+        id="invitados"
+        aria-labelledby="featured-guests-title"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(8,119,255,.2),transparent_34%),radial-gradient(circle_at_84%_8%,rgba(34,211,238,.12),transparent_28%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:72px_72px] opacity-[0.08]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-animate="fade-up">
+            <div>
+              <p className="mb-3 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Trophy size={15} aria-hidden="true" />
+                Invitados
+              </p>
+              <h2
+                className="text-2xl font-black uppercase tracking-normal sm:text-4xl"
+                id="featured-guests-title"
+              >
+                Invitados destacados
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-400 sm:text-right">
+              Profesionales y creadores con trayectorias vinculadas al entrenamiento,
+              la fuerza, la nutrición y el culturismo.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {featuredGuests.map((guest, index) => (
+              <GuestCard guest={guest} index={index} key={guest.name} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="relative overflow-hidden bg-black px-4 py-14 sm:px-6 sm:py-20 lg:py-24"
+        id="galeria"
+        aria-labelledby="gallery-title"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(8,119,255,.22),transparent_34%),linear-gradient(180deg,rgba(8,119,255,.08),transparent_45%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:70px_70px] opacity-[0.1]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-animate="fade-up">
+            <div>
+              <p className="mb-3 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Camera size={15} aria-hidden="true" />
+                Galería
+              </p>
+              <h2
+                className="text-2xl font-black uppercase tracking-normal sm:text-4xl"
+                id="gallery-title"
+              >
+                Galería visual
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-400 sm:text-right">
+              Imágenes orientadas a mostrar el ambiente del recinto, la zona de
+              competición y los espacios de participación.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+            {eventGallery.map((item, index) => (
+              <GalleryCard index={index} item={item} key={item.title} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="relative overflow-hidden bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:py-24"
+        id="actividades"
+        aria-labelledby="activities-title"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_14%,rgba(8,119,255,.2),transparent_32%),linear-gradient(135deg,rgba(34,211,238,.08),transparent_44%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:68px_68px] opacity-[0.08]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-animate="fade-up">
+            <div>
+              <p className="mb-3 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Dumbbell size={15} aria-hidden="true" />
+                Actividades
+              </p>
+              <h2
+                className="text-2xl font-black uppercase tracking-normal sm:text-4xl"
+                id="activities-title"
+              >
+                Actividades del evento
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-400 sm:text-right">
+              El programa combina formación, práctica deportiva, relación con marcas
+              y participación del público asistente.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+            {eventActivities.map((activity, index) => (
+              <ActivityCard activity={activity} index={index} key={activity.title} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:py-24" id="programa">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="mb-7 text-2xl font-bold sm:mb-10 sm:text-4xl" data-animate="fade-up">Programa del evento</h2>
+          <div className="grid gap-3 md:grid-cols-3 lg:gap-6">
+            {calendar.map(([day, text], index) => (
+              <Card
+                key={day}
+                className="soft-hover rounded-lg border-blue-900 bg-black/60 sm:rounded-3xl"
+                data-animate="lift"
+                style={{ "--reveal-delay": `${index * 80}ms` }}
+              >
+                <CardContent className="p-5 sm:p-6">
+                  <h3 className="mb-3 text-2xl font-bold text-blue-400">{day}</h3>
+                  <p className="text-slate-300">{text}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-black px-4 py-14 sm:px-6 sm:py-20 lg:py-24" id="entradas">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_16%,rgba(8,119,255,.18),transparent_34%)]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between" data-animate="fade-up">
+            <div>
+              <p className="mb-3 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Ticket size={15} aria-hidden="true" />
+                Entradas
+              </p>
+              <h2 className="text-2xl font-bold sm:text-4xl">Entradas y precios</h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-400 md:text-right">
+              Las entradas son válidas para FITNESS WORLD EXPO 2026, que se celebra
+              del 22 al 24 de mayo con horario de 08:00 a 17:00.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {ticketPlans.map((plan, index) => (
+              <TicketPlanCard index={index} key={plan.name} plan={plan} />
+            ))}
+          </div>
+
+          <div className="mt-8 grid items-start gap-5 sm:mt-10 md:grid-cols-[0.9fr_1.1fr] md:gap-6">
+            <div className="rounded-lg border border-white/10 bg-white/[0.045] p-4 text-sm leading-7 text-slate-300 sm:p-6" data-animate="slide-right">
+              <h3 className="mb-4 text-xl font-bold text-white">Información de compra</h3>
+              <p>
+                El proceso de inscripción permite seleccionar la entrada, registrar
+                los datos del asistente y recibir la acreditación digital. El recinto
+                abrirá cada día de 08:00 a 17:00.
+              </p>
+              <div className="mt-5 grid gap-3">
+                {ticketTypes.map((ticket) => (
+                  <p className="flex items-center gap-3" key={ticket}>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-blue-600/20 text-blue-400">
+                      <Ticket size={15} aria-hidden="true" />
+                    </span>
+                    {ticket}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <Card className="soft-hover rounded-lg border-blue-900 bg-slate-950 sm:rounded-3xl" data-animate="slide-left">
+              <CardContent className="space-y-3 p-4 sm:space-y-4 sm:p-8">
+                <label className="sr-only" htmlFor="name">
+                  Nombre completo
+                </label>
+                <input
+                  id="name"
+                  className="min-h-12 w-full rounded-xl border border-slate-700 bg-black px-4 py-3 text-white placeholder:text-slate-500 sm:p-4"
+                  placeholder="Nombre completo"
+                />
+                <label className="sr-only" htmlFor="email">
+                  Correo electrónico
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className="min-h-12 w-full rounded-xl border border-slate-700 bg-black px-4 py-3 text-white placeholder:text-slate-500 sm:p-4"
+                  placeholder="Correo electrónico"
+                />
+                <label className="sr-only" htmlFor="ticket">
+                  Tipo de entrada
+                </label>
+                <select
+                  id="ticket"
+                  className="min-h-12 w-full rounded-xl border border-slate-700 bg-black px-4 py-3 text-white sm:p-4"
+                >
+                  {ticketTypes.map((ticket) => (
+                    <option key={ticket}>{ticket}</option>
+                  ))}
+                </select>
+              <Button className="min-h-12 w-full rounded-xl bg-blue-600 py-4 hover:bg-blue-700 sm:py-6">
+                  Continuar al pago
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:py-24" id="localizacion">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(8,119,255,.18),transparent_28%),radial-gradient(circle_at_78%_30%,rgba(34,211,238,.10),transparent_30%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:76px_76px] opacity-[0.06]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-8 grid gap-4 lg:grid-cols-[0.85fr_1fr] lg:items-end" data-animate="fade-up">
+            <div>
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-cyan-300">
+                Cómo llegar
+              </p>
+              <h2 className="text-2xl font-black uppercase leading-tight text-white sm:text-4xl">
+                Localización
+              </h2>
+            </div>
+            <p className="text-sm leading-7 text-slate-300 sm:text-base lg:max-w-2xl lg:justify-self-end">
+              Palacio de Deportes José María Martín Carpena, Málaga. El evento
+              se celebrará los días 22, 23 y 24 de mayo de 2026, de 08:00 a 17:00.
+            </p>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
+            <div
+              className="soft-hover premium-ring relative min-h-[330px] overflow-hidden rounded-lg border border-blue-500/20 bg-black shadow-premium sm:min-h-[430px]"
+              data-animate="slide-right"
+            >
+              <iframe
+                className="absolute inset-0 h-full w-full border-0 grayscale-[12%] saturate-[1.05] contrast-[1.04]"
+                src={VENUE_MAP_URL}
+                title="Mapa del Palacio de Deportes José María Martín Carpena en Málaga"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,.18),rgba(2,6,23,.06)_45%,rgba(2,6,23,.72)),radial-gradient(circle_at_50%_46%,rgba(8,119,255,.20),transparent_34%)]" />
+              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-blue-400/20" />
+
+              <div className="absolute left-3 top-3 max-w-[15.5rem] rounded-lg border border-blue-400/30 bg-black/70 px-3 py-2.5 shadow-electric backdrop-blur-xl sm:left-6 sm:top-6 sm:max-w-[18rem] sm:px-4 sm:py-3">
+                <p className="text-[0.62rem] font-black uppercase tracking-[0.18em] text-cyan-300">
+                  Mapa real de la zona
+                </p>
+                <p className="mt-1 text-sm font-black uppercase leading-snug text-white sm:text-base">
+                  Palacio Martín Carpena
+                </p>
+                <p className="mt-2 text-xs leading-5 text-slate-300">
+                  Avenida Miguel Mérida Nicolich, Málaga.
+                </p>
+              </div>
+
+              <a
+                className="absolute right-3 top-3 inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-black/70 px-3 py-2 text-xs font-black uppercase text-cyan-200 shadow-premium backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-blue-500/20 hover:text-white sm:right-6 sm:top-6"
+                href={VENUE_MAP_LINK}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <Navigation size={15} aria-hidden="true" />
+                Abrir mapa
+              </a>
+
+              <div className="absolute inset-x-3 bottom-3 rounded-lg border border-white/10 bg-black/75 p-3 shadow-premium backdrop-blur-xl sm:inset-x-6 sm:bottom-6 sm:flex sm:items-center sm:justify-between sm:gap-4 sm:p-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                    Horario del evento
+                  </p>
+                  <p className="mt-1 text-lg font-black text-white">08:00 a 17:00</p>
+                </div>
+                <p className="mt-3 max-w-sm text-xs leading-5 text-slate-300 sm:mt-0 sm:text-right">
+                  Recinto situado en la zona oeste de Málaga, con acceso por transporte
+                  público, taxi/VTC y vehículo privado.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {locationDetails.map((item, index) => (
+                <LocationInfoCard key={item.title} item={item} index={index} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="relative overflow-hidden border-t border-blue-500/20 bg-black px-4 pt-14 sm:px-6 sm:pt-20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(8,119,255,.22),transparent_34%),radial-gradient(circle_at_84%_10%,rgba(34,211,238,.12),transparent_28%)]" />
+        <div className="absolute inset-0 bg-arena-grid bg-[size:72px_72px] opacity-[0.08]" />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="soft-hover rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-premium backdrop-blur-xl sm:p-8" data-animate="slide-right">
+              <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-lg border border-blue-400/30 bg-blue-500/10 px-3 py-2 text-xs font-black uppercase text-cyan-300">
+                <Zap size={15} aria-hidden="true" />
+                Evento fitness en Málaga
+              </p>
+              <h2 className="max-w-2xl text-2xl font-black uppercase leading-tight text-white sm:text-5xl">
+                Fitness World Expo 2026
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                Una propuesta de evento centrada en entrenamiento, marcas,
+                profesionales y público interesado en el sector fitness.
+              </p>
+
+              <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 xl:grid-cols-3">
+                <FooterContact
+                  icon={MapPin}
+                  label="Recinto"
+                  text="Palacio Martín Carpena"
+                />
+                <FooterContact
+                  icon={CalendarDays}
+                  label="Fechas"
+                  text="22, 23 y 24 de mayo de 2026 · 08:00 a 17:00"
+                />
+                <FooterContact
+                  icon={Mail}
+                  label="Contacto"
+                  text={OFFICIAL_EMAIL}
+                />
+              </div>
+            </div>
+
+            <div className="soft-hover rounded-lg border border-blue-400/20 bg-blue-500/10 p-5 shadow-electric backdrop-blur-xl sm:p-8" data-animate="slide-left">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+                Boletín
+              </p>
+              <h3 className="mt-3 text-xl font-black uppercase text-white sm:text-2xl">
+                Recibe información del evento
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                Comunicaciones sobre programa, entradas, invitados y aspectos prácticos
+                para asistentes y profesionales.
+              </p>
+              <form className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <label className="sr-only" htmlFor="newsletter-email">
+                  Correo electrónico para newsletter
+                </label>
+                <input
+                  className="min-h-12 flex-1 rounded-lg border border-white/10 bg-black/[0.45] px-4 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+                  id="newsletter-email"
+                  placeholder="tu@email.com"
+                  type="email"
+                />
+                <Button className="min-h-12 w-full px-5 sm:w-auto" type="button">
+                  <Send size={17} aria-hidden="true" />
+                Suscribirme
+                </Button>
+              </form>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 border-y border-white/10 py-8 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.15fr]" data-animate="fade-up">
+            <FooterColumn title="Enlaces rápidos">
+              <FooterLink href="#inicio">Inicio</FooterLink>
+              <FooterLink href="#invitados">Invitados</FooterLink>
+              <FooterLink href="#galeria">Galería</FooterLink>
+              <FooterLink href="#actividades">Actividades</FooterLink>
+              <FooterLink href="#programa">Programa</FooterLink>
+              <FooterLink href="#entradas">Entradas</FooterLink>
+            </FooterColumn>
+
+            <FooterColumn title="Redes sociales">
+              <div className="grid gap-3">
+                {socialChannels.map((channel, index) => (
+                  <SocialLink channel={channel} index={index} key={channel.name} />
+                ))}
+              </div>
+              <a
+                className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.045] px-4 py-3 text-xs font-black uppercase text-slate-300 transition duration-300 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-500/10 hover:text-white hover:shadow-electric sm:w-fit"
+                href={`mailto:${OFFICIAL_EMAIL}`}
+              >
+                <Mail size={16} aria-hidden="true" />
+                Contactar organización
+              </a>
+            </FooterColumn>
+
+            <FooterColumn title="Patrocinadores y socios">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {sponsorBrands.map((brand) => (
+                  <span
+                    className="flex min-h-11 min-w-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.045] px-2 py-3 text-center text-[0.66rem] font-black uppercase leading-tight text-slate-300 transition hover:border-cyan-300/70 hover:bg-blue-500/10 hover:text-white sm:text-xs"
+                    key={brand}
+                  >
+                    {brand}
+                  </span>
+                ))}
+              </div>
+            </FooterColumn>
+          </div>
+
+          <div className="flex flex-col gap-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>© 2026 FITNESS WORLD EXPO. Todos los derechos reservados.</p>
+            <div className="flex flex-wrap gap-4">
+              <a className="transition hover:text-cyan-300" href="#inicio">
+                Privacidad
+              </a>
+              <a className="transition hover:text-cyan-300" href="#inicio">
+                Condiciones
+              </a>
+              <a className="transition hover:text-cyan-300" href="#localizacion">
+                Málaga
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <MobileNav />
+    </div>
+  );
+}
+
+function Info({ icon: Icon, index = 0, title, text }) {
+  return (
+    <div
+      className="soft-hover flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-500/60 hover:bg-blue-500/10 sm:gap-4 sm:p-5"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 70}ms` }}
+    >
+      <div className="mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600/20 text-blue-300 sm:h-10 sm:w-10">
+        <Icon size={20} aria-hidden="true" />
+      </div>
+      <div>
+        <h3 className="mb-1 text-base font-bold leading-snug sm:text-lg">{title}</h3>
+        <p className="text-sm leading-6 text-slate-300">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function CountdownUnit({ label, value }) {
+  const displayValue = String(value).padStart(2, "0");
+
+  return (
+    <div className="countdown-card relative overflow-hidden rounded-lg border border-blue-400/20 bg-[linear-gradient(180deg,rgba(8,119,255,.16),rgba(2,6,23,.72))] px-2 py-3 text-center transition duration-300 hover:border-cyan-300/70 hover:bg-blue-500/20 sm:px-3 sm:py-4">
+      <strong
+        className="countdown-number block text-2xl font-black leading-none text-white sm:text-4xl"
+        key={displayValue}
+      >
+        {displayValue}
+      </strong>
+      <span className="mt-2 block text-[0.62rem] font-black uppercase tracking-[0.12em] text-slate-400 sm:text-[0.68rem] sm:tracking-[0.16em]">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function TicketPlanCard({ index = 0, plan }) {
+  return (
+    <article
+      className={`soft-hover group relative overflow-hidden rounded-lg border p-4 shadow-premium sm:p-6 ${
+        plan.highlighted
+          ? "border-blue-400/50 bg-blue-500/[0.13]"
+          : "border-white/10 bg-white/[0.045]"
+      }`}
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 80}ms` }}
+    >
+      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover:bg-blue-500/25" />
+      <div className="relative flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-cyan-300 sm:text-xs sm:tracking-[0.16em]">
+            {plan.note}
+          </p>
+          <h3 className="mt-3 text-lg font-black uppercase leading-tight text-white sm:text-xl">{plan.name}</h3>
+        </div>
+        {plan.highlighted && (
+          <span className="rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-2.5 py-2 text-[0.62rem] font-black uppercase text-cyan-200 sm:px-3 sm:text-[0.65rem]">
+            Recomendado
+          </span>
+        )}
+      </div>
+
+      <div className="relative mt-5 flex items-end gap-2 sm:mt-6">
+        <strong className="text-4xl font-black leading-none text-white sm:text-5xl">{plan.price}</strong>
+        <span className="pb-1 text-sm text-slate-400">IVA incluido</span>
+      </div>
+
+      <div className="relative mt-5 grid gap-3 border-t border-white/10 pt-5 sm:mt-6">
+        {plan.benefits.map((benefit) => (
+          <p className="flex gap-3 text-sm leading-6 text-slate-300" key={benefit}>
+            <CheckCircle2 className="mt-0.5 shrink-0 text-cyan-300" size={17} aria-hidden="true" />
+            {benefit}
+          </p>
+        ))}
+      </div>
+
+      <Button className="relative mt-6 min-h-12 w-full bg-blue-600 hover:bg-blue-500 sm:mt-7" href="#entradas">
+        Comprar
+        <ArrowRight size={17} aria-hidden="true" />
+      </Button>
+    </article>
+  );
+}
+
+function SponsorGroup({ group, index = 0 }) {
+  return (
+    <article
+      className="soft-hover group/category relative overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,.055),rgba(8,119,255,.035))] p-4 shadow-premium transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:shadow-electric sm:p-5 lg:p-6"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 90}ms` }}
+    >
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/80 to-transparent opacity-60 transition duration-300 group-hover/category:opacity-100" />
+      <div className="absolute -right-14 -top-16 h-40 w-40 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover/category:bg-blue-500/25" />
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-blue-500/10 to-transparent opacity-0 transition duration-300 group-hover/category:opacity-100" />
+
+      <div className="relative mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-cyan-300">
+            Categoría
+          </p>
+          <h3 className="mt-2 text-lg font-black uppercase leading-tight text-white sm:text-xl">
+            {group.category}
+          </h3>
+        </div>
+        <span className="w-fit rounded-lg border border-blue-400/25 bg-blue-500/10 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.14em] text-cyan-200">
+          {group.brands.length} marcas
+        </span>
+      </div>
+
+      <p className="relative mb-5 text-sm leading-6 text-slate-400 sm:mb-6">
+        {group.description}
+      </p>
+
+      <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {group.brands.map((brand, brandIndex) => (
+          <SponsorCard brand={brand} index={brandIndex} key={brand} />
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function SponsorCard({ brand, index = 0 }) {
+  const initials = brand
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2);
+
+  return (
+    <article
+      className="group relative min-h-[120px] overflow-hidden rounded-lg border border-white/10 bg-black/35 p-3 transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:bg-blue-500/10 hover:shadow-electric sm:min-h-[150px] sm:p-4"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 55}ms` }}
+    >
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover:bg-cyan-300/20" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-400/70 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+
+      <div className="relative flex h-full min-h-[96px] flex-col justify-between gap-3 sm:min-h-[122px] sm:gap-4">
+        <span className="grid h-11 w-11 place-items-center rounded-lg border border-blue-400/25 bg-blue-500/10 text-sm font-black uppercase text-cyan-200 shadow-[0_0_28px_rgba(8,119,255,.18)] transition duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white">
+          {initials}
+        </span>
+        <div>
+          <h4 className="break-words text-sm font-black uppercase leading-tight text-white sm:text-lg">
+            {brand}
+          </h4>
+          <p className="mt-2 text-[0.62rem] font-black uppercase tracking-[0.14em] text-slate-500 transition duration-300 group-hover:text-cyan-300">
+            Partner 2026
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function GuestCard({ guest, index = 0 }) {
+  return (
+    <article
+      className="soft-hover group overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] shadow-premium transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:bg-blue-500/10 hover:shadow-electric"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 80}ms` }}
+    >
+      <div className="relative h-60 overflow-hidden sm:h-80">
+        <div
+          className="fitness-media absolute inset-0 bg-no-repeat transition duration-700 group-hover:scale-110"
+          style={{
+            backgroundImage: `url('${guest.image}')`,
+            backgroundPosition: guest.imagePosition,
+            backgroundSize: guest.imageSize ?? "cover",
+          }}
+          role="img"
+          aria-label={guest.imageAlt}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-blue-500/0 mix-blend-screen transition duration-500 group-hover:bg-blue-500/[0.16]" />
+        <div className="absolute left-4 top-4 rounded-lg border border-cyan-300/[0.35] bg-black/[0.45] px-3 py-2 text-xs font-black uppercase text-cyan-300 backdrop-blur-xl">
+          Invitado 2026
+        </div>
+      </div>
+      <div className="p-4 sm:p-5">
+        <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-cyan-300 sm:text-xs sm:tracking-[0.18em]">
+          {guest.specialty}
+        </p>
+        <h3 className="mt-3 text-lg font-black uppercase text-white sm:text-2xl">{guest.name}</h3>
+        <p className="mt-3 text-sm leading-6 text-slate-300 lg:min-h-[72px]">{guest.bio}</p>
+        <div className="mt-5 flex gap-2 border-t border-white/10 pt-4">
+          <a
+            className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-xs font-bold text-slate-300 transition hover:border-blue-400 hover:bg-blue-500/[0.15] hover:text-white"
+            href={guest.socials.instagramUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Instagram className="shrink-0" size={15} aria-hidden="true" />
+            <span className="truncate">{guest.socials.instagram}</span>
+          </a>
+          <a
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 text-slate-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white"
+            href={guest.socials.youtubeUrl}
+            aria-label={`YouTube de ${guest.name}: ${guest.socials.youtube}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Youtube size={17} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function GalleryCard({ index = 0, item }) {
+  return (
+    <article
+      className={`soft-hover group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] shadow-premium transition duration-500 hover:-translate-y-1 hover:border-blue-400/70 hover:shadow-electric ${
+        item.featured ? "min-h-[285px] sm:min-h-[520px] lg:row-span-2" : "min-h-[220px] sm:min-h-[250px]"
+      }`}
+      data-animate={item.featured ? "slide-right" : "lift"}
+      style={{ "--reveal-delay": `${index * 100}ms` }}
+    >
+      <img
+        className="fitness-media absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+        src={item.image}
+        alt={`${item.title} en Fitness World Expo`}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
+      <div className="absolute inset-0 bg-blue-500/0 mix-blend-screen transition duration-500 group-hover:bg-blue-500/[0.18]" />
+      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-cyan-300 via-blue-500 to-transparent opacity-70" />
+      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+        <p className="mb-3 inline-flex rounded-lg border border-cyan-300/[0.35] bg-black/[0.45] px-3 py-2 text-[0.68rem] font-black uppercase tracking-[0.14em] text-cyan-300 backdrop-blur-xl sm:text-xs sm:tracking-[0.18em]">
+          {item.label}
+        </p>
+        <h3 className="text-xl font-black uppercase text-white sm:text-3xl">
+          {item.title}
+        </h3>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300">
+          {item.description}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function ActivityCard({ activity, index = 0 }) {
+  const Icon = activityIcons[activity.icon] ?? Dumbbell;
+
+  return (
+    <article
+      className="soft-hover group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-premium transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:bg-blue-500/10 hover:shadow-electric sm:p-6"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 70}ms` }}
+    >
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover:bg-blue-500/25" />
+      <div className="relative mb-6 flex items-start justify-between gap-3 sm:mb-8">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-blue-400/25 bg-blue-500/15 text-cyan-300 transition duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white sm:h-14 sm:w-14">
+          <Icon size={25} aria-hidden="true" />
+        </span>
+        <span className="max-w-[10rem] rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right text-[0.62rem] font-black uppercase tracking-[0.12em] text-slate-400 sm:max-w-none sm:text-[0.68rem] sm:tracking-[0.18em]">
+          {activity.label}
+        </span>
+      </div>
+      <h3 className="relative text-xl font-black uppercase text-white sm:text-2xl">
+        {activity.title}
+      </h3>
+      <p className="relative mt-4 text-sm leading-6 text-slate-300">
+        {activity.description}
+      </p>
+    </article>
+  );
+}
+
+function LocationInfoCard({ item, index = 0 }) {
+  const Icon = item.icon;
+
+  return (
+    <article
+      className="soft-hover group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-premium transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:bg-blue-500/10 hover:shadow-electric sm:p-5"
+      data-animate="lift"
+      style={{ "--reveal-delay": `${index * 70}ms` }}
+    >
+      <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover:bg-blue-500/25" />
+      <div className="relative flex gap-4">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-blue-400/25 bg-blue-500/15 text-cyan-300 transition duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white">
+          <Icon size={22} aria-hidden="true" />
+        </span>
+        <div>
+          <h3 className="text-base font-black uppercase text-white sm:text-lg">
+            {item.title}
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{item.text}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function FooterContact({ icon: Icon, label, text }) {
+  return (
+    <div className="min-w-0 rounded-lg border border-white/10 bg-black/30 p-4">
+      <Icon className="mb-3 text-cyan-300" size={20} aria-hidden="true" />
+      <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 max-w-full break-words text-sm font-bold leading-5 text-slate-200 [overflow-wrap:anywhere]">
+        {text}
+      </p>
+    </div>
+  );
+}
+
+function FooterColumn({ title, children }) {
+  return (
+    <div>
+      <h3 className="mb-4 text-sm font-black uppercase tracking-[0.18em] text-cyan-300">
+        {title}
+      </h3>
+      <div className="grid gap-2">{children}</div>
+    </div>
+  );
+}
+
+function FooterLink({ href, children }) {
+  return (
+    <a
+      className="group inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"
+      href={href}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-blue-400 opacity-60 transition group-hover:opacity-100 group-hover:shadow-[0_0_16px_rgba(96,165,250,.9)]" />
+      {children}
+    </a>
+  );
+}
+
+function SocialLink({ channel, index = 0 }) {
+  const Icon = channel.icon;
+  const isActive = Boolean(channel.href);
+  const className =
+    "group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] p-3 text-left shadow-premium transition duration-300 hover:-translate-y-1 hover:border-blue-400/70 hover:bg-blue-500/10 hover:text-white hover:shadow-electric";
+  const content = (
+    <>
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-blue-500/10 blur-2xl transition duration-300 group-hover:bg-blue-500/25" />
+      <div className="relative flex items-center gap-3">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-blue-400/25 bg-blue-500/15 text-cyan-300 transition duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white">
+          <Icon size={18} aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center justify-between gap-3">
+            <span className="block text-sm font-black uppercase text-white">
+              {channel.name}
+            </span>
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2 py-1 text-[0.58rem] font-black uppercase tracking-[0.12em] text-cyan-200">
+              {channel.status}
+            </span>
+          </span>
+          <span className="mt-1 block truncate text-xs font-semibold text-cyan-300">
+            {channel.handle}
+          </span>
+        </span>
+      </div>
+      <p className="relative mt-3 text-xs leading-5 text-slate-400 transition duration-300 group-hover:text-slate-200">
+        {channel.text}
+      </p>
+    </>
+  );
+
+  if (!isActive) {
+    return (
+      <div
+        aria-label={`${channel.name}: ${channel.status}`}
+        className={className}
+        style={{ "--reveal-delay": `${index * 70}ms` }}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      className={className}
+      href={channel.href}
+      rel="noreferrer"
+      style={{ "--reveal-delay": `${index * 70}ms` }}
+      target="_blank"
+    >
+      {content}
+    </a>
+  );
+}
+
+function MobileNav() {
+  const items = [
+    { href: "#inicio", label: "Inicio", icon: Zap },
+    { href: "#actividades", label: "Agenda", icon: Dumbbell },
+    { href: "#entradas", label: "Entradas", icon: Ticket },
+    { href: "#localizacion", label: "Mapa", icon: MapPin },
+  ];
+
+  return (
+    <nav
+      aria-label="Navegación móvil"
+      className="fixed bottom-[calc(0.6rem+env(safe-area-inset-bottom))] left-2 z-50 grid w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] grid-cols-4 gap-0.5 overflow-hidden rounded-lg border border-blue-400/25 bg-black/85 p-1 shadow-electric backdrop-blur-xl md:hidden"
+    >
+      {items.map(({ href, label, icon: Icon }) => (
+        <a
+          className="flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[0.52rem] font-black uppercase tracking-[0.04em] text-slate-400 transition hover:bg-blue-500/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 min-[380px]:text-[0.56rem]"
+          href={href}
+          key={href}
+        >
+          <Icon className="shrink-0" size={16} aria-hidden="true" />
+          <span className="max-w-full truncate">{label}</span>
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+export { runBasicChecks };
